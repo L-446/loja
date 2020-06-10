@@ -69,7 +69,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-phone"></i></span>
                     </div>
-                    <input type="text" id="fone" name="fone" class="form-control" data-inputmask='"mask": "(88)99999-9999"' data-mask>
+                    <input type="text" id="celular" name="celular" class="form-control" data-inputmask='"mask": "(88)99999-9999"' data-mask>
                   </div>
                   <!-- /.input group -->
                 </div>

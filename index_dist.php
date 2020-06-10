@@ -43,14 +43,51 @@
     <!-- /.content-header -->
     <section class="content">
     <div class="container-fluid">
+
       <?php
    
-      $distribuidora  = $_POST['nome'];
-      $cnpj           = $_POST['cnpj'];
-      $fone           = $_POST['fone'];
+      //$distribuidora  = $_POST['nome'];
+      //$cnpj           = $_POST['cnpj'];
+      //$fone           = $_POST['fone'];
          
-      echo $distribuidora. " - ". $cnpj. " - ". $fone;
+      //echo $distribuidora. " - ". $cnpj. " - ". $fone;
       
+      ?>
+
+      <?php
+
+      include "conexao.php";
+      $conn = connection();
+      //Vai substituir --> $conn = new PDO...
+
+      try {
+        //$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+        // set the PDO error mode to exception
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // prepare sql and bind parameters
+        $stmt = $conn->prepare("INSERT INTO distribuidora (nome, cnpj, celular)
+        VALUES (:nome, :cnpj, :celular)");
+        $stmt->bindParam(':nome', $nome);
+        $stmt->bindParam(':cnpj', $cnpj);
+        $stmt->bindParam(':celular', $celular);
+
+        // insert a row
+        //$nome = "Distribuidora São Francisco";
+        //$cnpj = "14.763.425/0001-85";
+        //$celular = "(85)99999-0909";
+
+        @$nome    = $_POST['nome'];
+        @$cnpj    = $_POST['cnpj'];
+        @$celular = $_POST['celular'];
+        $stmt->execute();
+
+        echo "Distribuidora cadastrada com Sucesso!!!";
+      } catch(PDOException $e) {
+        echo "Error: " . $e->getMessage();
+      }
+      $conn = null;
+
       ?>
   
     <h1 class="cover-heading" style="text-align: center;"><b>Distribuidoras</b></h1>
@@ -76,23 +113,56 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr>
-                    <td>Trident</td>
-                    <td>Internet Explorer 4.0</td>
-                    <td>Win 95+</td>
-                    <td> 4</td>
-                  </tr>
-                  <tr>
-                    <td>Trident</td>
-                    <td>Internet Explorer 5.0</td>
-                    <td>Win 95+</td>
-                    <td>5</td>
-                  </tr>
+                 
+            <?php
+                //echo "<table style='border: solid 1px black;'>";
+                //echo "<tr><th>Id</th><th>Firstname</th><th>Lastname</th></tr>";
+
+                class TableRows extends RecursiveIteratorIterator {
+                  function __construct($it) {
+                    parent::__construct($it, self::LEAVES_ONLY);
+                  }
+
+                  function current() {
+                    return "<td>" . parent::current(). "</td>";
+                  }
+
+                  function beginChildren() {
+                    echo "<tr>";
+                  }
+
+                  function endChildren() {
+                    echo "</tr>" . "\n";
+                  }
+                }
+                
+                //include "conexao.php";
+                $conn = connection();
+
+                try {
+                  //$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+                  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                  $stmt = $conn->prepare("SELECT * FROM distribuidora");
+                  $stmt->execute();
+
+                  //ESTE FOREACH É RESPONSAVEL POR COLOCAR OS DADOS EM CADA LINHA DA TABELA - LISTA OS DADOS NO BANCO
+                  $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+                  foreach(new TableRows(new RecursiveArrayIterator($stmt->fetchAll())) as $k=>$v) {
+                    echo $v;
+                  }
+                } catch(PDOException $e) {
+                  echo "Error: " . $e->getMessage();
+                }
+                $conn = null;
+            ?>
+
                   </tbody>
                 </table>
               </div>
               <!-- /.card-body -->
             </div>
+
+            
                 
       </div><!-- /.container-fluid -->
       </section>
